@@ -18,17 +18,20 @@ TYPE_TO_VALUE = {
 				}
 
 # Functions for generating var declarations, initializations + copying
-def get_prv_vars(vars):
+def get_prv_mems(vars):
 	return "\n\t\t".join(f"{var};" for var in vars)
+
+def get_fn_headers(vars):
+		return "\n\n".join(f"{var}\n{{\n\n}};" for var in vars if var[-1] == ')')
 
 def get_var_copies(vars, indent):
 	return ("\n" + "\t" * indent).join(
-		f"{var.split()[1]} = other.{var.split()[1]};" for var in vars
+		f"{var.split()[1]} = other.{var.split()[1]};" for var in vars if var[-1] != ')'
 		)
 
 def get_var_inits(vars):
 	return ", ".join(
-		f"{var.split()[1]}({TYPE_TO_VALUE[var.split()[0]]})" for var in vars
+		f"{var.split()[1]}({TYPE_TO_VALUE[var.split()[0]]})" for var in vars if var[-1] != ')'
 		)
 
 # Generate a standard canonical form .hpp file
@@ -42,7 +45,7 @@ def gen_hpp(class_name, vars):
 class {class_name}
 {{
 	private:
-		{get_prv_vars(vars)}
+		{get_prv_mems(vars)}
 
 	public:
 		{class_name}();
@@ -77,6 +80,8 @@ def gen_cpp(class_name, vars):
 }}
 
 {class_name}::~{class_name}() {{}}
+
+{get_fn_headers(vars)}
 ''')
 
 
