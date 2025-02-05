@@ -21,8 +21,8 @@ TYPE_TO_VALUE = {
 def get_prv_mems(vars):
 	return "\n\t\t".join(f"{var};" for var in vars)
 
-def get_fn_headers(vars):
-		return "\n\n".join(f"{var}\n{{\n\n}};" for var in vars if var[-1] == ')')
+def get_fn_headers(vars, class_name):
+		return "\n\n".join(f"{var.split(' ', 1)[0]} {class_name}::{var.split(' ', 1)[1]}\n{{\n\n}};" for var in vars if var[-1] == ')')
 
 def get_var_copies(vars, indent):
 	return ("\n" + "\t" * indent).join(
@@ -81,7 +81,7 @@ def gen_cpp(class_name, vars):
 
 {class_name}::~{class_name}() {{}}
 
-{get_fn_headers(vars)}
+{get_fn_headers(vars, class_name)}
 ''')
 
 
